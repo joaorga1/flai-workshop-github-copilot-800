@@ -140,4 +140,4 @@ class Command(BaseCommand):
             )
         
         self.stdout.write("Created workouts...")
-        self.stdout.write(self.style.SUCCESS('Successfully populated the octofit_db database!'))
+        self.stdout.write(self.style.SUCCESS('Successfully populated the octofit_db database!')) 
