@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Table, Spinner, Alert, Button, Card } from 'react-bootstrap';
+import { Container, Row, Col, Table, Spinner, Alert, Button, Card, Modal, Form } from 'react-bootstrap';
 
 function Users() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    team: '',
+    age: '',
+  });
+  const [teams, setTeams] = useState([]);
 
   useEffect(() => {
     fetchUsers();
+    fetchTeams();
   }, []);
 
   const fetchUsers = async () => {
@@ -35,6 +45,73 @@ function Users() {
       setError(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchTeams = async () => {
+    try {
+      const apiUrl = `https://${process.env.REACT_APP_CODESPACE_NAME}-8000.app.github.dev/api/teams/`;
+      const response = await fetch(apiUrl);
+      if (response.ok) {
+        const data = await response.json();
+        const teamsList = data.results || data;
+        setTeams(Array.isArray(teamsList) ? teamsList : []);
+      }
+    } catch (error) {
+      console.error('Error fetching teams:', error);
+    }
+  };
+
+  const handleEditClick = (user) => {
+    setEditingUser(user);
+    setFormData({
+      name: user.name || '',
+      email: user.email || '',
+      team: user.team || '',
+      age: user.age || '',
+    });
+    setShowEditModal(true);
+  };
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSaveUser = async () => {
+    try {
+      const apiUrl = `https://${process.env.REACT_APP_CODESPACE_NAME}-8000.app.github.dev/api/users/${editingUser.id}/`;
+      
+      const response = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          team: formData.team,
+          age: formData.age ? parseInt(formData.age) : null,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const updatedUser = await response.json();
+      console.log('User updated:', updatedUser);
+
+      // Update the users list
+      setUsers(users.map(u => u.id === editingUser.id ? updatedUser : u));
+      setShowEditModal(false);
+      setEditingUser(null);
+    } catch (error) {
+      console.error('Error updating user:', error);
+      setError('Failed to update user: ' + error.message);
     }
   };
 
@@ -81,10 +158,10 @@ function Users() {
                     <thead>
                       <tr>
                         <th className="text-center">#</th>
-                        <th>Username</th>
+                        <th>Name</th>
                         <th>Email</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
+                        <th>Team</th>
+                        <th>Age</th>
                         <th className="text-center">Actions</th>
                       </tr>
                     </thead>
@@ -93,18 +170,23 @@ function Users() {
                         <tr key={user.id}>
                           <td className="text-center">{index + 1}</td>
                           <td>
-                            <strong>{user.username}</strong>
+                            <strong>{user.name}</strong>
                           </td>
                           <td>
                             <a href={`mailto:${user.email}`}>{user.email}</a>
                           </td>
-                          <td>{user.first_name || '-'}</td>
-                          <td>{user.last_name || '-'}</td>
+                          <td>{user.team || '-'}</td>
+                          <td className="text-center">{user.age || '-'}</td>
                           <td className="text-center">
                             <Button variant="sm" size="sm" className="btn-primary me-2">
                               View Profile
                             </Button>
-                            <Button variant="sm" size="sm" className="btn-warning">
+                            <Button 
+                              variant="sm" 
+                              size="sm" 
+                              className="btn-warning"
+                              onClick={() => handleEditClick(user)}
+                            >
                               Edit
                             </Button>
                           </td>
@@ -123,6 +205,75 @@ function Users() {
           </Col>
         </Row>
       )}
+
+      {/* Edit User Modal */}
+      <Modal show={showEditModal} onHide={() => setShowEditModal(false)} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Edit User Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleFormChange}
+                placeholder="Enter user name"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleFormChange}
+                placeholder="Enter email"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Team</Form.Label>
+              <Form.Select
+                name="team"
+                value={formData.team}
+                onChange={handleFormChange}
+              >
+                <option value="">Select a team</option>
+                {teams.map((team) => (
+                  <option key={team.id} value={team.name}>
+                    {team.name}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Age</Form.Label>
+              <Form.Control
+                type="number"
+                name="age"
+                value={formData.age}
+                onChange={handleFormChange}
+                placeholder="Enter age"
+                min="0"
+                max="150"
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleSaveUser}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }

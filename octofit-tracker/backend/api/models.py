@@ -29,6 +29,10 @@ class Team(models.Model):
     def __str__(self):
         return self.name
 
+    def get_member_count(self):
+        """Count the number of users in this team"""
+        return User.objects.filter(team=self.name).count()
+
 
 class Activity(models.Model):
     user_name = models.CharField(max_length=255)

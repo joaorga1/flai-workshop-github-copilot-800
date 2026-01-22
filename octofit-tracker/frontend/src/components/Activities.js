@@ -38,6 +38,23 @@ function Activities() {
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return '-';
+      return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (e) {
+      return '-';
+    }
+  };
+
   return (
     <Container className="mt-5 mb-5">
       <Row className="mb-4">
@@ -83,6 +100,7 @@ function Activities() {
                         <th className="text-center">#</th>
                         <th>Activity Name</th>
                         <th className="text-center">Type</th>
+                        <th className="text-center">Date</th>
                         <th className="text-center">Calories Burned</th>
                         <th className="text-center">Duration (min)</th>
                         <th className="text-center">Actions</th>
@@ -93,15 +111,16 @@ function Activities() {
                         <tr key={activity.id}>
                           <td className="text-center">{index + 1}</td>
                           <td>
-                            <strong>{activity.name}</strong>
+                            <strong>{activity.user_name}</strong>
                           </td>
                           <td className="text-center">
                             <span className="badge bg-info text-dark">{activity.activity_type}</span>
                           </td>
+                          <td className="text-center">{formatDate(activity.timestamp)}</td>
                           <td className="text-center">
                             <span className="badge bg-warning text-dark">{activity.calories_burned}</span>
                           </td>
-                          <td className="text-center">{activity.duration_minutes}</td>
+                          <td className="text-center">{activity.duration}</td>
                           <td className="text-center">
                             <Button variant="sm" size="sm" className="btn-primary me-2">
                               View

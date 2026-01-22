@@ -93,10 +93,11 @@ function Workouts() {
                     <thead>
                       <tr>
                         <th className="text-center">#</th>
-                        <th>Workout Name</th>
-                        <th className="text-center">Type</th>
+                        <th>Workout Title</th>
+                        <th>Description</th>
                         <th className="text-center">Difficulty</th>
                         <th className="text-center">Duration (min)</th>
+                        <th className="text-center">Calories</th>
                         <th className="text-center">Actions</th>
                       </tr>
                     </thead>
@@ -105,17 +106,20 @@ function Workouts() {
                         <tr key={workout.id}>
                           <td className="text-center">{index + 1}</td>
                           <td>
-                            <strong>{workout.name}</strong>
+                            <strong>{workout.title}</strong>
+                          </td>
+                          <td>
+                            <span className="text-muted">{workout.description || '-'}</span>
                           </td>
                           <td className="text-center">
-                            <span className="badge bg-info text-dark">{workout.workout_type}</span>
-                          </td>
-                          <td className="text-center">
-                            <span className={`badge bg-${getDifficultyBadge(workout.difficulty_level)}`}>
-                              {workout.difficulty_level}
+                            <span className={`badge bg-${getDifficultyBadge(workout.difficulty)}`}>
+                              {workout.difficulty ? workout.difficulty.charAt(0).toUpperCase() + workout.difficulty.slice(1) : 'N/A'}
                             </span>
                           </td>
-                          <td className="text-center">{workout.duration_minutes}</td>
+                          <td className="text-center">{workout.duration || '-'}</td>
+                          <td className="text-center">
+                            <span className="badge bg-warning text-dark">{workout.calories_burned || 0}</span>
+                          </td>
                           <td className="text-center">
                             <Button variant="sm" size="sm" className="btn-primary me-2">
                               Start

@@ -83,22 +83,23 @@ function Leaderboard() {
                   <div className="mb-3">
                     <span style={{ fontSize: '3rem' }}>🥇</span>
                   </div>
-                  <h5 className="card-title">{leaderboard[0]?.username || leaderboard[0]?.user_name}</h5>
+                  <h5 className="card-title">{leaderboard[0]?.user_name || 'N/A'}</h5>
+                  <p className="text-muted mb-3">{leaderboard[0]?.team || 'No Team'}</p>
                   <Row className="g-2">
                     <Col xs={6}>
                       <div className="p-2 bg-light rounded">
                         <p className="mb-0 fw-bold text-primary">
-                          {leaderboard[0]?.score || leaderboard[0]?.total_score || 0}
+                          {leaderboard[0]?.total_calories || 0}
                         </p>
-                        <small className="text-muted">Points</small>
+                        <small className="text-muted">Calories</small>
                       </div>
                     </Col>
                     <Col xs={6}>
                       <div className="p-2 bg-light rounded">
                         <p className="mb-0 fw-bold text-success">
-                          {leaderboard[0]?.workouts_completed || leaderboard[0]?.total_workouts || 0}
+                          {leaderboard[0]?.total_duration || 0}
                         </p>
-                        <small className="text-muted">Workouts</small>
+                        <small className="text-muted">Minutes</small>
                       </div>
                     </Col>
                   </Row>
@@ -118,8 +119,9 @@ function Leaderboard() {
                     <tr>
                       <th className="text-center">Rank</th>
                       <th>Username</th>
-                      <th className="text-center">Points</th>
-                      <th className="text-center">Workouts</th>
+                      <th>Team</th>
+                      <th className="text-center">Total Calories</th>
+                      <th className="text-center">Duration (min)</th>
                       <th className="text-center">Status</th>
                     </tr>
                   </thead>
@@ -138,13 +140,16 @@ function Leaderboard() {
                               <strong>#{index + 1}</strong>
                             </td>
                             <td>
-                              <strong>{entry.username || entry.user_name}</strong>
+                              <strong>{entry.user_name || 'N/A'}</strong>
+                            </td>
+                            <td>
+                              {entry.team || 'No Team'}
                             </td>
                             <td className="text-center">
-                              <Badge bg="primary">{entry.score || entry.total_score || 0}</Badge>
+                              <Badge bg="primary">{entry.total_calories || 0}</Badge>
                             </td>
                             <td className="text-center">
-                              <Badge bg="success">{entry.workouts_completed || entry.total_workouts || 0}</Badge>
+                              <Badge bg="success">{entry.total_duration || 0}</Badge>
                             </td>
                             <td className="text-center">
                               {index < 3 ? (
@@ -158,9 +163,9 @@ function Leaderboard() {
                       })
                     ) : (
                       <tr>
-                        <td colSpan="5" className="text-center py-5">
+                        <td colSpan="6" className="text-center py-5">
                           <h5 className="mb-3">No leaderboard data available</h5>
-                          <p className="text-muted">Complete some workouts to appear on the leaderboard!</p>
+                          <p className="text-muted">Complete some activities to appear on the leaderboard!</p>
                         </td>
                       </tr>
                     )}

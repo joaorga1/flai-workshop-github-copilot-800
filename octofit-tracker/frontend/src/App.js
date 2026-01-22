@@ -18,21 +18,25 @@ function App() {
       icon: '🏃',
       title: 'Track Activities',
       description: 'Log your daily activities and monitor your progress over time.',
+      path: '/activities',
     },
     {
       icon: '💪',
       title: 'Workouts',
       description: 'Discover and complete personalized workout routines for your fitness goals.',
+      path: '/workouts',
     },
     {
       icon: '👥',
       title: 'Manage Teams',
       description: 'Create teams, invite friends, and work together toward shared fitness goals.',
+      path: '/teams',
     },
     {
       icon: '🏆',
       title: 'Leaderboards',
       description: 'Compete with your teammates and climb the rankings to become a champion.',
+      path: '/leaderboard',
     },
   ];
 
@@ -42,7 +46,8 @@ function App() {
         <Navbar bg="dark" expand="lg" sticky="top" className="navbar-dark">
           <Container>
             <Navbar.Brand as={Link} to="/">
-              🐙 OctoFit Tracker
+              <img src="/octofitapp-logo.png" alt="OctoFit Tracker Logo" className="navbar-logo" />
+              OctoFit Tracker
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
@@ -108,15 +113,17 @@ function App() {
                       <Row>
                         {features.map((feature, index) => (
                           <Col md={6} lg={3} key={index} className="mb-4">
-                            <Card className="h-100 text-center shadow-sm">
-                              <Card.Body>
-                                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
-                                  {feature.icon}
-                                </div>
-                                <Card.Title>{feature.title}</Card.Title>
-                                <Card.Text>{feature.description}</Card.Text>
-                              </Card.Body>
-                            </Card>
+                            <Link to={feature.path} style={{ textDecoration: 'none' }}>
+                              <Card className="h-100 text-center shadow-sm hover-card" style={{ cursor: 'pointer', transition: 'transform 0.3s ease' }}>
+                                <Card.Body>
+                                  <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
+                                    {feature.icon}
+                                  </div>
+                                  <Card.Title>{feature.title}</Card.Title>
+                                  <Card.Text>{feature.description}</Card.Text>
+                                </Card.Body>
+                              </Card>
+                            </Link>
                           </Col>
                         ))}
                       </Row>
