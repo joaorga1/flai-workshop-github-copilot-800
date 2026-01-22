@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import os
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.views import APIView
@@ -22,13 +23,24 @@ from rest_framework.reverse import reverse
 
 class APIRootView(APIView):
     def get(self, request, format=None):
+        # Get CODESPACE_NAME from environment, default to localhost
+        codespace_name = os.getenv('CODESPACE_NAME')
+        if codespace_name:
+            scheme = 'https'
+            host = f'{codespace_name}-8000.app.github.dev'
+        else:
+            scheme = request.scheme
+            host = request.get_host()
+        
+        base_url = f'{scheme}://{host}/api'
+        
         return Response({
-            'users': reverse('user-list', request=request),
-            'teams': reverse('team-list', request=request),
-            'activities': reverse('activity-list', request=request),
-            'leaderboard': reverse('leaderboard-list', request=request),
-            'workouts': reverse('workout-list', request=request),
-        }, name='api_root')
+            'users': f'{base_url}/users/',
+            'teams': f'{base_url}/teams/',
+            'activities': f'{base_url}/activities/',
+            'leaderboard': f'{base_url}/leaderboard/',
+            'workouts': f'{base_url}/workouts/',
+        })
 
 
 urlpatterns = [
